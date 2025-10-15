@@ -69,7 +69,8 @@ class ProjectController extends Controller
             'owner',
             'members',
             'tasks.assignedUser',
-            'tasks.comments.user'
+            'tasks.comments.user',
+            'tasks.subtasks'
         ]);
 
         $tasksByStatus = $project->tasksByStatus();
@@ -87,7 +88,10 @@ class ProjectController extends Controller
             abort(403, 'You do not have permission to edit this project.');
         }
 
-        return view('projects.edit', compact('project'));
+        // Get all users for team member selection
+        $users = User::all();
+
+        return view('projects.edit', compact('project', 'users'));
     }
 
     /**
@@ -104,10 +108,20 @@ class ProjectController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'deadline' => 'nullable|date',
-            'status' => 'required|in:active,completed,archived',
+            'status' => 'required|in:active,completed,on_hold',
+            'members' => 'nullable|array',
+            'members.*' => 'exists:users,id',
         ]);
 
         $project->update($validated);
+
+        // Sync team members if provided
+        if ($request->has('members')) {
+            $project->members()->sync($request->members);
+        } else {
+            // If no members selected, remove all
+            $project->members()->detach();
+        }
 
         return redirect()->route('projects.show', $project)
             ->with('success', 'Project updated successfully!');

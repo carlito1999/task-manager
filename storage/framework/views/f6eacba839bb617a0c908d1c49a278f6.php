@@ -50,6 +50,9 @@
                 <?php echo $__env->yieldContent('content'); ?>
             </main>
         </div>
+        
+        <!-- Scripts Stack -->
+        <?php echo $__env->yieldPushContent('scripts'); ?>
     </body>
 </html>
 <?php /**PATH A:\myprojects\task-manager\resources\views/layouts/app.blade.php ENDPATH**/ ?>

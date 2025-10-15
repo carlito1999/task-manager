@@ -52,6 +52,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/attachments/{attachment}/download', [App\Http\Controllers\AttachmentController::class, 'download'])->name('attachments.download');
 });
 
+// Subtask routes (nested under projects and tasks)
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::post('/projects/{project}/tasks/{task}/subtasks', [App\Http\Controllers\SubtaskController::class, 'store'])->name('subtasks.store');
+    Route::patch('/projects/{project}/tasks/{task}/subtasks/{subtask}', [App\Http\Controllers\SubtaskController::class, 'update'])->name('subtasks.update');
+    Route::patch('/projects/{project}/tasks/{task}/subtasks/{subtask}/status', [App\Http\Controllers\SubtaskController::class, 'updateStatus'])->name('subtasks.update-status');
+    Route::delete('/projects/{project}/tasks/{task}/subtasks/{subtask}', [App\Http\Controllers\SubtaskController::class, 'destroy'])->name('subtasks.destroy');
+    Route::post('/projects/{project}/tasks/{task}/subtasks/reorder', [App\Http\Controllers\SubtaskController::class, 'updateOrder'])->name('subtasks.reorder');
+});
+
 // Profile routes
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

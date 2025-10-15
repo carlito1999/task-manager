@@ -1,18 +1,22 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    {{ $project->name }}
-                </h2>
-                <p class="text-gray-600 mt-1">{{ $project->description }}</p>
-            </div>
-            <div class="flex space-x-2">
-                @if($project->userCanManage(auth()->user()))
-                    <a href="{{ route('projects.tasks.create', $project) }}" 
-                       class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                        Add Task
-                    </a>
+@extends('layouts.app')
+
+@section('content')
+    <!-- Header -->
+    <div class="bg-white shadow mb-6">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                        {{ $project->name }}
+                    </h2>
+                    <p class="text-gray-600 mt-1">{{ $project->description }}</p>
+                </div>
+                <div class="flex space-x-2">
+                    @if($project->userCanManage(auth()->user()))
+                        <a href="{{ route('projects.tasks.create', $project) }}" 
+                           class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                            Add Task
+                        </a>
                     <a href="{{ route('projects.edit', $project) }}" 
                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                         Edit Project
@@ -20,7 +24,7 @@
                 @endif
             </div>
         </div>
-    </x-slot>
+    </div>
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -251,4 +255,4 @@
             @endif
         </div>
     </div>
-</x-app-layout>
+@endsection

@@ -228,6 +228,141 @@ class DatabaseSeeder extends Seeder
             $createdTasks[] = $task;
         }
 
+        // Create sample subtasks
+        $subtasks = [
+            // Subtasks for "Implement responsive design" task (index 1)
+            [
+                'title' => 'Set up CSS Grid layout',
+                'description' => 'Create the main grid structure for desktop and mobile layouts.',
+                'status' => 'done',
+                'priority' => 'high',
+                'task_id' => $createdTasks[1]->id,
+                'assigned_to' => $testUser->id,
+                'due_date' => now()->addDays(1),
+                'sort_order' => 1,
+            ],
+            [
+                'title' => 'Implement mobile breakpoints',
+                'description' => 'Add responsive breakpoints for tablet and mobile devices.',
+                'status' => 'in_progress',
+                'priority' => 'high',
+                'task_id' => $createdTasks[1]->id,
+                'assigned_to' => $testUser->id,
+                'due_date' => now()->addDays(2),
+                'sort_order' => 2,
+            ],
+            [
+                'title' => 'Test cross-browser compatibility',
+                'description' => 'Test responsive design across different browsers.',
+                'status' => 'todo',
+                'priority' => 'medium',
+                'task_id' => $createdTasks[1]->id,
+                'assigned_to' => $testUser->id,
+                'due_date' => now()->addDays(3),
+                'sort_order' => 3,
+            ],
+
+            // Subtasks for "Design app architecture" task (index 4)
+            [
+                'title' => 'Choose state management library',
+                'description' => 'Research and decide between Redux, Zustand, or Context API.',
+                'status' => 'done',
+                'priority' => 'high',
+                'task_id' => $createdTasks[4]->id,
+                'assigned_to' => $testUser->id,
+                'due_date' => now()->addDays(3),
+                'sort_order' => 1,
+            ],
+            [
+                'title' => 'Design component structure',
+                'description' => 'Plan the component hierarchy and folder structure.',
+                'status' => 'done',
+                'priority' => 'high',
+                'task_id' => $createdTasks[4]->id,
+                'assigned_to' => $testUser->id,
+                'due_date' => now()->addDays(4),
+                'sort_order' => 2,
+            ],
+            [
+                'title' => 'Set up navigation system',
+                'description' => 'Implement React Navigation with proper routing.',
+                'status' => 'in_progress',
+                'priority' => 'medium',
+                'task_id' => $createdTasks[4]->id,
+                'assigned_to' => $testUser->id,
+                'due_date' => now()->addDays(5),
+                'sort_order' => 3,
+            ],
+
+            // Subtasks for "Create campaign materials" task (index 10)
+            [
+                'title' => 'Design social media banners',
+                'description' => 'Create Instagram, Facebook, and Twitter banner designs.',
+                'status' => 'done',
+                'priority' => 'medium',
+                'task_id' => $createdTasks[10]->id,
+                'assigned_to' => $testUser->id,
+                'due_date' => now()->addDays(1),
+                'sort_order' => 1,
+            ],
+            [
+                'title' => 'Write email templates',
+                'description' => 'Create responsive email templates for the campaign.',
+                'status' => 'in_progress',
+                'priority' => 'medium',
+                'task_id' => $createdTasks[10]->id,
+                'assigned_to' => $testUser->id,
+                'due_date' => now()->addDays(2),
+                'sort_order' => 2,
+            ],
+            [
+                'title' => 'Create video content scripts',
+                'description' => 'Write scripts for promotional video content.',
+                'status' => 'todo',
+                'priority' => 'low',
+                'task_id' => $createdTasks[10]->id,
+                'assigned_to' => $testUser->id,
+                'due_date' => now()->addDays(3),
+                'sort_order' => 3,
+            ],
+
+            // Subtasks for "Fix urgent bug" task (index 12)
+            [
+                'title' => 'Identify root cause',
+                'description' => 'Debug and find the source of the login issue.',
+                'status' => 'done',
+                'priority' => 'high',
+                'task_id' => $createdTasks[12]->id,
+                'assigned_to' => $testUser->id,
+                'due_date' => now()->subDays(1),
+                'sort_order' => 1,
+            ],
+            [
+                'title' => 'Implement fix',
+                'description' => 'Apply the necessary code changes to resolve the issue.',
+                'status' => 'in_progress',
+                'priority' => 'high',
+                'task_id' => $createdTasks[12]->id,
+                'assigned_to' => $testUser->id,
+                'due_date' => now(),
+                'sort_order' => 2,
+            ],
+            [
+                'title' => 'Test fix in staging',
+                'description' => 'Verify the fix works correctly in staging environment.',
+                'status' => 'todo',
+                'priority' => 'high',
+                'task_id' => $createdTasks[12]->id,
+                'assigned_to' => $testUser->id,
+                'due_date' => now()->addDays(1),
+                'sort_order' => 3,
+            ],
+        ];
+
+        foreach ($subtasks as $subtaskData) {
+            \App\Models\Subtask::create($subtaskData);
+        }
+
         // Create sample comments
         $comments = [
             [
@@ -276,6 +411,7 @@ class DatabaseSeeder extends Seeder
         $this->command->info('Users created: ' . User::count());
         $this->command->info('Projects created: ' . Project::count());
         $this->command->info('Tasks created: ' . Task::count());
+        $this->command->info('Subtasks created: ' . \App\Models\Subtask::count());
         $this->command->info('Comments created: ' . Comment::count());
     }
 }

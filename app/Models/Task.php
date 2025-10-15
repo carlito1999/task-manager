@@ -84,6 +84,14 @@ class Task extends Model
     }
 
     /**
+     * Subtasks of this task
+     */
+    public function subtasks(): HasMany
+    {
+        return $this->hasMany(Subtask::class)->orderBy('sort_order')->orderBy('created_at');
+    }
+
+    /**
      * Get priority color class for UI
      */
     public function getPriorityColorAttribute(): string
@@ -188,5 +196,68 @@ class Task extends Model
     public function assignTo(User $user): bool
     {
         return $this->update(['assigned_to' => $user->id]);
+    }
+
+    /**
+     * Calculate subtask completion percentage
+     */
+    public function getSubtaskProgressAttribute(): array
+    {
+        $total = $this->subtasks()->count();
+        
+        if ($total === 0) {
+            return [
+                'total' => 0,
+                'completed' => 0,
+                'percentage' => 0,
+            ];
+        }
+
+        $completed = $this->subtasks()->where('status', 'done')->count();
+        $percentage = round(($completed / $total) * 100, 1);
+
+        return [
+            'total' => $total,
+            'completed' => $completed,
+            'percentage' => $percentage,
+        ];
+    }
+
+    /**
+     * Check if all subtasks are completed
+     */
+    public function areAllSubtasksCompleted(): bool
+    {
+        $total = $this->subtasks()->count();
+        
+        if ($total === 0) {
+            return false;
+        }
+
+        $completed = $this->subtasks()->where('status', 'done')->count();
+        return $completed === $total;
+    }
+
+    /**
+     * Auto-update task status based on subtask completion
+     */
+    public function updateStatusFromSubtasks(): bool
+    {
+        $progress = $this->subtask_progress;
+        
+        // If all subtasks are done, mark task as done
+        if ($progress['total'] > 0 && $progress['completed'] === $progress['total']) {
+            if ($this->status !== self::STATUS_DONE) {
+                return $this->update(['status' => self::STATUS_DONE]);
+            }
+        }
+        // If some subtasks are in progress, mark task as in progress
+        elseif ($this->subtasks()->where('status', 'in_progress')->exists()) {
+            if ($this->status === self::STATUS_TODO) {
+                return $this->update(['status' => self::STATUS_IN_PROGRESS]);
+            }
+        }
+
+        return true;
     }
 }

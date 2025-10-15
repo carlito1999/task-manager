@@ -101,7 +101,13 @@ class TaskController extends Controller
             abort(404);
         }
 
-        $task->load(['assignedUser', 'comments.user', 'attachments.user', 'project.members']);
+        $task->load([
+            'assignedUser', 
+            'comments.user', 
+            'attachments.user', 
+            'project.members',
+            'subtasks.assignedUser'
+        ]);
 
         return view('tasks.show', compact('project', 'task'));
     }
