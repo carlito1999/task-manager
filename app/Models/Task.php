@@ -76,6 +76,14 @@ class Task extends Model
     }
 
     /**
+     * Attachments on this task
+     */
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(Attachment::class);
+    }
+
+    /**
      * Get priority color class for UI
      */
     public function getPriorityColorAttribute(): string

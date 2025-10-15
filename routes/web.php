@@ -11,36 +11,6 @@ Route::get('/', function () {
     return redirect()->route('dashboard');
 });
 
-// Test route for dashboard without auth
-Route::get('/test-dashboard', function () {
-    $taskStats = [
-        'total' => 0,
-        'completed' => 0,
-        'in_progress' => 0,
-        'todo' => 0,
-        'overdue' => 0,
-    ];
-
-    $projectStats = [
-        'total' => 0,
-        'active' => 0,
-        'completed' => 0,
-        'owned' => 0,
-    ];
-
-    $userProjects = collect([]);
-    $upcomingTasks = collect([]);
-    $overdueTasks = collect([]);
-
-    return view('dashboard', compact(
-        'userProjects',
-        'taskStats', 
-        'projectStats',
-        'upcomingTasks',
-        'overdueTasks'
-    ));
-});
-
 // Dashboard routes
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -73,6 +43,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/projects/{project}/tasks/{task}/comments', [CommentController::class, 'store'])->name('comments.store');
     Route::patch('/projects/{project}/tasks/{task}/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
     Route::delete('/projects/{project}/tasks/{task}/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+});
+
+// Attachment routes (nested under projects and tasks)
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::post('/projects/{project}/tasks/{task}/attachments', [App\Http\Controllers\AttachmentController::class, 'store'])->name('attachments.store');
+    Route::delete('/projects/{project}/tasks/{task}/attachments/{attachment}', [App\Http\Controllers\AttachmentController::class, 'destroy'])->name('attachments.destroy');
+    Route::get('/attachments/{attachment}/download', [App\Http\Controllers\AttachmentController::class, 'download'])->name('attachments.download');
 });
 
 // Profile routes

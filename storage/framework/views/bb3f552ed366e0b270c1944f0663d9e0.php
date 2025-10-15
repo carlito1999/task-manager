@@ -1,14 +1,15 @@
-@extends('layouts.app')
 
-@section('content')
+
+<?php $__env->startSection('content'); ?>
     <!-- Header -->
     <div class="bg-white shadow mb-6">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    {{ __('My Projects') }}
+                    <?php echo e(__('My Projects')); ?>
+
                 </h2>
-                <a href="{{ route('projects.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <a href="<?php echo e(route('projects.create')); ?>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     Create New Project
                 </a>
             </div>
@@ -17,25 +18,27 @@
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if($projects->count() > 0)
+            <?php if($projects->count() > 0): ?>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach($projects as $project)
+                    <?php $__currentLoopData = $projects; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $project): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg hover:shadow-md transition-shadow">
                             <div class="p-6">
                                 <!-- Project Header -->
                                 <div class="flex justify-between items-start mb-4">
                                     <div class="flex-1">
                                         <h3 class="text-lg font-semibold text-gray-900 mb-2">
-                                            <a href="{{ route('projects.show', $project) }}" class="hover:text-blue-600">
-                                                {{ $project->name }}
+                                            <a href="<?php echo e(route('projects.show', $project)); ?>" class="hover:text-blue-600">
+                                                <?php echo e($project->name); ?>
+
                                             </a>
                                         </h3>
                                         <span class="px-2 py-1 text-xs rounded-full 
-                                            @if($project->status === 'active') bg-green-100 text-green-800
-                                            @elseif($project->status === 'completed') bg-blue-100 text-blue-800  
-                                            @else bg-gray-100 text-gray-800
-                                            @endif">
-                                            {{ ucfirst($project->status) }}
+                                            <?php if($project->status === 'active'): ?> bg-green-100 text-green-800
+                                            <?php elseif($project->status === 'completed'): ?> bg-blue-100 text-blue-800  
+                                            <?php else: ?> bg-gray-100 text-gray-800
+                                            <?php endif; ?>">
+                                            <?php echo e(ucfirst($project->status)); ?>
+
                                         </span>
                                     </div>
                                     
@@ -50,32 +53,32 @@
                                         <div x-show="open" @click.away="open = false" 
                                              class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
                                             <div class="py-1">
-                                                <a href="{{ route('projects.show', $project) }}" 
+                                                <a href="<?php echo e(route('projects.show', $project)); ?>" 
                                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">View</a>
-                                                @if($project->userCanManage(auth()->user()))
-                                                    <a href="{{ route('projects.edit', $project) }}" 
+                                                <?php if($project->userCanManage(auth()->user())): ?>
+                                                    <a href="<?php echo e(route('projects.edit', $project)); ?>" 
                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Edit</a>
-                                                @endif
-                                                @if($project->user_id === auth()->id())
-                                                    <form method="POST" action="{{ route('projects.destroy', $project) }}" 
+                                                <?php endif; ?>
+                                                <?php if($project->user_id === auth()->id()): ?>
+                                                    <form method="POST" action="<?php echo e(route('projects.destroy', $project)); ?>" 
                                                           onsubmit="return confirm('Are you sure?')">
-                                                        @csrf
-                                                        @method('DELETE')
+                                                        <?php echo csrf_field(); ?>
+                                                        <?php echo method_field('DELETE'); ?>
                                                         <button type="submit" 
                                                                 class="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-gray-100">
                                                             Delete
                                                         </button>
                                                     </form>
-                                                @endif
+                                                <?php endif; ?>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Project Description -->
-                                @if($project->description)
-                                    <p class="text-gray-600 text-sm mb-4 line-clamp-2">{{ $project->description }}</p>
-                                @endif
+                                <?php if($project->description): ?>
+                                    <p class="text-gray-600 text-sm mb-4 line-clamp-2"><?php echo e($project->description); ?></p>
+                                <?php endif; ?>
 
                                 <!-- Project Stats -->
                                 <div class="space-y-3">
@@ -83,60 +86,62 @@
                                     <div>
                                         <div class="flex justify-between text-sm text-gray-600 mb-1">
                                             <span>Progress</span>
-                                            <span>{{ $project->completion_percentage }}%</span>
+                                            <span><?php echo e($project->completion_percentage); ?>%</span>
                                         </div>
                                         <div class="w-full bg-gray-200 rounded-full h-2">
                                             <div class="bg-blue-600 h-2 rounded-full" 
-                                                 style="width: {{ $project->completion_percentage }}%"></div>
+                                                 style="width: <?php echo e($project->completion_percentage); ?>%"></div>
                                         </div>
                                     </div>
 
                                     <!-- Task Count -->
                                     <div class="flex justify-between text-sm text-gray-600">
                                         <span>Tasks</span>
-                                        <span>{{ $project->tasks->count() }} total</span>
+                                        <span><?php echo e($project->tasks->count()); ?> total</span>
                                     </div>
 
                                     <!-- Team Members -->
                                     <div class="flex justify-between text-sm text-gray-600">
                                         <span>Team</span>
-                                        <span>{{ $project->members->count() }} members</span>
+                                        <span><?php echo e($project->members->count()); ?> members</span>
                                     </div>
 
                                     <!-- Deadline -->
-                                    @if($project->deadline)
+                                    <?php if($project->deadline): ?>
                                         <div class="flex justify-between text-sm text-gray-600">
                                             <span>Deadline</span>
-                                            <span class="@if($project->deadline->isPast()) text-red-600 @endif">
-                                                {{ $project->deadline->format('M j, Y') }}
+                                            <span class="<?php if($project->deadline->isPast()): ?> text-red-600 <?php endif; ?>">
+                                                <?php echo e($project->deadline->format('M j, Y')); ?>
+
                                             </span>
                                         </div>
-                                    @endif
+                                    <?php endif; ?>
                                 </div>
 
                                 <!-- Action Buttons -->
                                 <div class="mt-4 flex space-x-2">
-                                    <a href="{{ route('projects.show', $project) }}" 
+                                    <a href="<?php echo e(route('projects.show', $project)); ?>" 
                                        class="flex-1 text-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
                                         View Project
                                     </a>
-                                    @if($project->userCanManage(auth()->user()))
-                                        <a href="{{ route('projects.tasks.create', $project) }}" 
+                                    <?php if($project->userCanManage(auth()->user())): ?>
+                                        <a href="<?php echo e(route('projects.tasks.create', $project)); ?>" 
                                            class="flex-1 text-center bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-sm">
                                             Add Task
                                         </a>
-                                    @endif
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
 
                 <!-- Pagination -->
                 <div class="mt-8">
-                    {{ $projects->links() }}
+                    <?php echo e($projects->links()); ?>
+
                 </div>
-            @else
+            <?php else: ?>
                 <!-- Empty State -->
                 <div class="text-center py-12">
                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -146,7 +151,7 @@
                     <h3 class="mt-2 text-sm font-medium text-gray-900">No projects</h3>
                     <p class="mt-1 text-sm text-gray-500">Get started by creating your first project.</p>
                     <div class="mt-6">
-                        <a href="{{ route('projects.create') }}" 
+                        <a href="<?php echo e(route('projects.create')); ?>" 
                            class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
                             <svg class="-ml-1 mr-2 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
@@ -155,7 +160,8 @@
                         </a>
                     </div>
                 </div>
-            @endif
+            <?php endif; ?>
         </div>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH A:\myprojects\task-manager\resources\views/projects/index.blade.php ENDPATH**/ ?>

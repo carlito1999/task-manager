@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use App\Models\Project;
 use App\Models\User;
+use App\Mail\TaskAssigned;
+use App\Mail\TaskStatusChanged;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class TaskController extends Controller
 {
@@ -73,6 +76,12 @@ class TaskController extends Controller
 
         $task = $project->tasks()->create($validated);
 
+        // Send email notification if task is assigned
+        if ($task->assigned_to) {
+            $assignedUser = User::find($task->assigned_to);
+            Mail::to($assignedUser)->send(new TaskAssigned($task, Auth::user()));
+        }
+
         return redirect()->route('projects.show', $project)
             ->with('success', 'Task created successfully!');
     }
@@ -92,7 +101,7 @@ class TaskController extends Controller
             abort(404);
         }
 
-        $task->load(['assignedUser', 'comments.user', 'project.members']);
+        $task->load(['assignedUser', 'comments.user', 'attachments.user', 'project.members']);
 
         return view('tasks.show', compact('project', 'task'));
     }
@@ -192,7 +201,14 @@ class TaskController extends Controller
             'status' => 'required|in:todo,in_progress,done',
         ]);
 
+        $oldStatus = $task->status;
         $task->update($validated);
+
+        // Send email notification if status changed and task is assigned
+        if ($oldStatus !== $validated['status'] && $task->assigned_to) {
+            $assignedUser = User::find($task->assigned_to);
+            Mail::to($assignedUser)->send(new TaskStatusChanged($task, $oldStatus, $validated['status'], Auth::user()));
+        }
 
         return back()->with('success', 'Task status updated successfully!');
     }
@@ -204,14 +220,31 @@ class TaskController extends Controller
     {
         $user = Auth::user();
         
+        // Get all tasks assigned to user
         $tasks = $user->assignedTasks()
             ->with(['project', 'comments'])
-            ->incomplete()
+            ->where('status', '!=', 'done')
             ->latest()
             ->paginate(10);
 
-        $upcomingTasks = $user->upcomingTasks()->limit(5)->get();
-        $overdueTasks = $user->overdueTasks()->limit(5)->get();
+        // Get upcoming tasks (due in next 7 days)
+        $upcomingTasks = $user->assignedTasks()
+            ->where('due_date', '>=', now())
+            ->where('due_date', '<=', now()->addDays(7))
+            ->where('status', '!=', 'done')
+            ->with('project')
+            ->orderBy('due_date', 'asc')
+            ->limit(5)
+            ->get();
+            
+        // Get overdue tasks
+        $overdueTasks = $user->assignedTasks()
+            ->where('due_date', '<', now())
+            ->where('status', '!=', 'done')
+            ->with('project')
+            ->orderBy('due_date', 'asc')
+            ->limit(5)
+            ->get();
 
         return view('tasks.my-tasks', compact('tasks', 'upcomingTasks', 'overdueTasks'));
     }
