@@ -1,14 +1,24 @@
-<x-app-layout>
-    <x-slot name="header">
+<?php if (isset($component)) { $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54 = $attributes; } ?>
+<?php $component = App\View\Components\AppLayout::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('app-layout'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\App\View\Components\AppLayout::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+     <?php $__env->slot('header', null, []); ?> 
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Dashboard') }}
+                <?php echo e(__('Dashboard')); ?>
+
             </h2>
-            <a href="{{ route('projects.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <a href="<?php echo e(route('projects.create')); ?>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                 Create Project
             </a>
         </div>
-    </x-slot>
+     <?php $__env->endSlot(); ?>
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -27,7 +37,7 @@
                             </div>
                             <div class="ml-4">
                                 <div class="text-sm font-medium text-gray-500">Total Tasks</div>
-                                <div class="text-2xl font-bold text-gray-900">{{ $taskStats['total'] }}</div>
+                                <div class="text-2xl font-bold text-gray-900"><?php echo e($taskStats['total']); ?></div>
                             </div>
                         </div>
                     </div>
@@ -46,7 +56,7 @@
                             </div>
                             <div class="ml-4">
                                 <div class="text-sm font-medium text-gray-500">Completed</div>
-                                <div class="text-2xl font-bold text-gray-900">{{ $taskStats['completed'] }}</div>
+                                <div class="text-2xl font-bold text-gray-900"><?php echo e($taskStats['completed']); ?></div>
                             </div>
                         </div>
                     </div>
@@ -65,7 +75,7 @@
                             </div>
                             <div class="ml-4">
                                 <div class="text-sm font-medium text-gray-500">Active Projects</div>
-                                <div class="text-2xl font-bold text-gray-900">{{ $projectStats['active'] }}</div>
+                                <div class="text-2xl font-bold text-gray-900"><?php echo e($projectStats['active']); ?></div>
                             </div>
                         </div>
                     </div>
@@ -84,7 +94,7 @@
                             </div>
                             <div class="ml-4">
                                 <div class="text-sm font-medium text-gray-500">Overdue</div>
-                                <div class="text-2xl font-bold text-gray-900">{{ $taskStats['overdue'] }}</div>
+                                <div class="text-2xl font-bold text-gray-900"><?php echo e($taskStats['overdue']); ?></div>
                             </div>
                         </div>
                     </div>
@@ -97,35 +107,36 @@
                     <div class="p-6">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-lg font-medium text-gray-900">Recent Projects</h3>
-                            <a href="{{ route('projects.index') }}" class="text-blue-500 hover:text-blue-700">View All</a>
+                            <a href="<?php echo e(route('projects.index')); ?>" class="text-blue-500 hover:text-blue-700">View All</a>
                         </div>
                         
-                        @if($userProjects->count() > 0)
+                        <?php if($userProjects->count() > 0): ?>
                             <div class="space-y-3">
-                                @foreach($userProjects as $project)
+                                <?php $__currentLoopData = $userProjects; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $project): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <div class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
                                         <div class="flex-1">
-                                            <h4 class="font-medium text-gray-900">{{ $project->name }}</h4>
-                                            <p class="text-sm text-gray-500">{{ $project->tasks->count() }} tasks • {{ $project->completion_percentage }}% complete</p>
+                                            <h4 class="font-medium text-gray-900"><?php echo e($project->name); ?></h4>
+                                            <p class="text-sm text-gray-500"><?php echo e($project->tasks->count()); ?> tasks • <?php echo e($project->completion_percentage); ?>% complete</p>
                                         </div>
                                         <div class="flex space-x-2">
                                             <span class="px-2 py-1 text-xs rounded-full 
-                                                @if($project->status === 'active') bg-green-100 text-green-800
-                                                @elseif($project->status === 'completed') bg-blue-100 text-blue-800  
-                                                @else bg-gray-100 text-gray-800
-                                                @endif">
-                                                {{ ucfirst($project->status) }}
+                                                <?php if($project->status === 'active'): ?> bg-green-100 text-green-800
+                                                <?php elseif($project->status === 'completed'): ?> bg-blue-100 text-blue-800  
+                                                <?php else: ?> bg-gray-100 text-gray-800
+                                                <?php endif; ?>">
+                                                <?php echo e(ucfirst($project->status)); ?>
+
                                             </span>
-                                            <a href="{{ route('projects.show', $project) }}" class="text-blue-500 hover:text-blue-700">
+                                            <a href="<?php echo e(route('projects.show', $project)); ?>" class="text-blue-500 hover:text-blue-700">
                                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
                                                 </svg>
                                             </a>
                                         </div>
                                     </div>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
-                        @else
+                        <?php else: ?>
                             <div class="text-center py-8">
                                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
@@ -133,7 +144,7 @@
                                 <h3 class="mt-2 text-sm font-medium text-gray-900">No projects</h3>
                                 <p class="mt-1 text-sm text-gray-500">Get started by creating your first project.</p>
                                 <div class="mt-6">
-                                    <a href="{{ route('projects.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                                    <a href="<?php echo e(route('projects.create')); ?>" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
                                         <svg class="-ml-1 mr-2 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                                         </svg>
@@ -141,7 +152,7 @@
                                     </a>
                                 </div>
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
                 </div>
 
@@ -150,34 +161,36 @@
                     <div class="p-6">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-lg font-medium text-gray-900">Upcoming Tasks</h3>
-                            <a href="{{ route('tasks.my-tasks') }}" class="text-blue-500 hover:text-blue-700">View All</a>
+                            <a href="<?php echo e(route('tasks.my-tasks')); ?>" class="text-blue-500 hover:text-blue-700">View All</a>
                         </div>
 
-                        @if($upcomingTasks->count() > 0)
+                        <?php if($upcomingTasks->count() > 0): ?>
                             <div class="space-y-3">
-                                @foreach($upcomingTasks as $task)
+                                <?php $__currentLoopData = $upcomingTasks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $task): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <div class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
                                         <div class="flex-1">
-                                            <h4 class="font-medium text-gray-900">{{ $task->title }}</h4>
+                                            <h4 class="font-medium text-gray-900"><?php echo e($task->title); ?></h4>
                                             <p class="text-sm text-gray-500">
-                                                {{ $task->project->name }} • 
-                                                Due {{ $task->due_date->format('M j') }}
+                                                <?php echo e($task->project->name); ?> • 
+                                                Due <?php echo e($task->due_date->format('M j')); ?>
+
                                             </p>
                                         </div>
                                         <div class="flex items-center space-x-2">
-                                            <span class="px-2 py-1 text-xs rounded-full {{ $task->priority_color }}">
-                                                {{ ucfirst($task->priority) }}
+                                            <span class="px-2 py-1 text-xs rounded-full <?php echo e($task->priority_color); ?>">
+                                                <?php echo e(ucfirst($task->priority)); ?>
+
                                             </span>
-                                            <a href="{{ route('projects.tasks.show', [$task->project, $task]) }}" class="text-blue-500 hover:text-blue-700">
+                                            <a href="<?php echo e(route('projects.tasks.show', [$task->project, $task])); ?>" class="text-blue-500 hover:text-blue-700">
                                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
                                                 </svg>
                                             </a>
                                         </div>
                                     </div>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
-                        @else
+                        <?php else: ?>
                             <div class="text-center py-8">
                                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -185,13 +198,13 @@
                                 <h3 class="mt-2 text-sm font-medium text-gray-900">No upcoming tasks</h3>
                                 <p class="mt-1 text-sm text-gray-500">All caught up! No tasks due soon.</p>
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
 
             <!-- Overdue Tasks Alert -->
-            @if($overdueTasks->count() > 0)
+            <?php if($overdueTasks->count() > 0): ?>
                 <div class="mt-6 bg-red-50 border border-red-200 rounded-lg p-4">
                     <div class="flex">
                         <div class="flex-shrink-0">
@@ -201,24 +214,35 @@
                         </div>
                         <div class="ml-3">
                             <h3 class="text-sm font-medium text-red-800">
-                                You have {{ $overdueTasks->count() }} overdue tasks
+                                You have <?php echo e($overdueTasks->count()); ?> overdue tasks
                             </h3>
                             <div class="mt-2 text-sm text-red-700">
                                 <ul class="list-disc list-inside space-y-1">
-                                    @foreach($overdueTasks as $task)
+                                    <?php $__currentLoopData = $overdueTasks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $task): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <li>
-                                            <a href="{{ route('projects.tasks.show', [$task->project, $task]) }}" class="underline">
-                                                {{ $task->title }}
+                                            <a href="<?php echo e(route('projects.tasks.show', [$task->project, $task])); ?>" class="underline">
+                                                <?php echo e($task->title); ?>
+
                                             </a> 
-                                            ({{ $task->project->name }})
+                                            (<?php echo e($task->project->name); ?>)
                                         </li>
-                                    @endforeach
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </div>
-            @endif
+            <?php endif; ?>
         </div>
     </div>
-</x-app-layout>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
+<?php $attributes = $__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
+<?php unset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
+<?php $component = $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
+<?php unset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
+<?php endif; ?>
+<?php /**PATH A:\myprojects\task-manager\resources\views/dashboard.blade.php ENDPATH**/ ?>
