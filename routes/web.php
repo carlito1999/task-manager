@@ -36,6 +36,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // My tasks page
     Route::get('/my-tasks', [TaskController::class, 'myTasks'])->name('tasks.my-tasks');
+    Route::get('/my-tasks/statistics', [TaskController::class, 'getTaskStatistics'])->name('tasks.statistics');
 });
 
 // Comment routes (nested under projects and tasks)

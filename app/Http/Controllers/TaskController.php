@@ -228,10 +228,13 @@ class TaskController extends Controller
         
         // Get all tasks assigned to user
         $tasks = $user->assignedTasks()
-            ->with(['project', 'comments'])
+            ->with(['project', 'comments', 'subtasks'])
             ->where('status', '!=', 'done')
             ->latest()
             ->paginate(10);
+
+        // Calculate detailed statistics
+        $taskStats = $this->calculateTaskStatistics($user);
 
         // Get upcoming tasks (due in next 7 days)
         $upcomingTasks = $user->assignedTasks()
@@ -252,6 +255,91 @@ class TaskController extends Controller
             ->limit(5)
             ->get();
 
-        return view('tasks.my-tasks', compact('tasks', 'upcomingTasks', 'overdueTasks'));
+        return view('tasks.my-tasks', compact('tasks', 'taskStats', 'upcomingTasks', 'overdueTasks'));
+    }
+
+    /**
+     * Get real-time task statistics for AJAX updates.
+     */
+    public function getTaskStatistics(): \Illuminate\Http\JsonResponse
+    {
+        $user = Auth::user();
+        $stats = $this->calculateTaskStatistics($user);
+        
+        return response()->json($stats);
+    }
+
+    /**
+     * Calculate comprehensive task statistics for a user.
+     */
+    private function calculateTaskStatistics($user): array
+    {
+        $allTasks = $user->assignedTasks()->with(['subtasks']);
+
+        // Basic counts
+        $totalTasks = $allTasks->count();
+        $completedTasks = $allTasks->where('status', 'done')->count();
+        $inProgressTasks = $allTasks->where('status', 'in_progress')->count();
+        $todoTasks = $allTasks->where('status', 'todo')->count();
+        
+        // Time-based statistics
+        $overdueTasks = $allTasks->where('due_date', '<', now())
+            ->where('status', '!=', 'done')->count();
+        $dueTodayTasks = $allTasks->whereDate('due_date', today())
+            ->where('status', '!=', 'done')->count();
+        $dueThisWeekTasks = $allTasks->whereBetween('due_date', [now(), now()->endOfWeek()])
+            ->where('status', '!=', 'done')->count();
+        
+        // Priority-based statistics
+        $highPriorityTasks = $allTasks->where('priority', 'high')
+            ->where('status', '!=', 'done')->count();
+        $mediumPriorityTasks = $allTasks->where('priority', 'medium')
+            ->where('status', '!=', 'done')->count();
+        $lowPriorityTasks = $allTasks->where('priority', 'low')
+            ->where('status', '!=', 'done')->count();
+
+        // Progress calculations
+        $completionRate = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100, 1) : 0;
+        
+        // Productivity metrics
+        $tasksCompletedThisWeek = $user->assignedTasks()
+            ->where('status', 'done')
+            ->whereBetween('updated_at', [now()->startOfWeek(), now()->endOfWeek()])
+            ->count();
+        
+        $tasksCompletedThisMonth = $user->assignedTasks()
+            ->where('status', 'done')
+            ->whereBetween('updated_at', [now()->startOfMonth(), now()->endOfMonth()])
+            ->count();
+
+        // Subtask statistics
+        $totalSubtasks = $user->assignedTasks()->withCount('subtasks')->get()->sum('subtasks_count');
+        $completedSubtasks = $user->assignedTasks()
+            ->with(['subtasks' => function($query) {
+                $query->where('status', 'done');
+            }])
+            ->get()
+            ->sum(function($task) {
+                return $task->subtasks->count();
+            });
+
+        return [
+            'total' => $totalTasks,
+            'completed' => $completedTasks,
+            'in_progress' => $inProgressTasks,
+            'todo' => $todoTasks,
+            'overdue' => $overdueTasks,
+            'due_today' => $dueTodayTasks,
+            'due_this_week' => $dueThisWeekTasks,
+            'high_priority' => $highPriorityTasks,
+            'medium_priority' => $mediumPriorityTasks,
+            'low_priority' => $lowPriorityTasks,
+            'completion_rate' => $completionRate,
+            'completed_this_week' => $tasksCompletedThisWeek,
+            'completed_this_month' => $tasksCompletedThisMonth,
+            'total_subtasks' => $totalSubtasks,
+            'completed_subtasks' => $completedSubtasks,
+            'subtask_completion_rate' => $totalSubtasks > 0 ? round(($completedSubtasks / $totalSubtasks) * 100, 1) : 0,
+        ];
     }
 }

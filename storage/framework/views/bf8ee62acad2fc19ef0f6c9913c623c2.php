@@ -4,13 +4,26 @@
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-7xl mx-auto">
         <!-- Header -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">My Tasks</h1>
-            <p class="text-gray-600 mt-2">Manage all your assigned tasks in one place</p>
+        <div class="mb-8 flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">My Tasks</h1>
+                <p class="text-gray-600 mt-2">Manage all your assigned tasks in one place</p>
+            </div>
+            <div class="flex items-center space-x-3">
+                <div class="flex items-center text-sm text-gray-500">
+                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                    </svg>
+                    <span id="last-updated">Updated just now</span>
+                </div>
+                <button onclick="refreshStatistics()" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm font-medium transition-colors">
+                    Refresh
+                </button>
+            </div>
         </div>
 
-        <!-- Stats Overview -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Enhanced Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" id="statistics-container">
             <!-- Total Tasks -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <div class="flex items-center">
@@ -22,13 +35,36 @@
                         </div>
                     </div>
                     <div class="ml-4">
-                        <div class="text-sm font-medium text-gray-500">Active Tasks</div>
-                        <div class="text-2xl font-bold text-gray-900"><?php echo e($tasks->total()); ?></div>
+                        <div class="text-sm font-medium text-gray-500">Total Tasks</div>
+                        <div class="text-2xl font-bold text-gray-900" data-stat="total"><?php echo e($taskStats['total']); ?></div>
+                        <div class="text-xs text-gray-500 mt-1">
+                            <span data-stat="completion_rate"><?php echo e($taskStats['completion_rate']); ?>%</span> completed
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Upcoming Tasks -->
+            <!-- Active Tasks -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-green-100 rounded-md flex items-center justify-center">
+                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-500">In Progress</div>
+                        <div class="text-2xl font-bold text-gray-900" data-stat="in_progress"><?php echo e($taskStats['in_progress']); ?></div>
+                        <div class="text-xs text-gray-500 mt-1">
+                            <span data-stat="todo"><?php echo e($taskStats['todo']); ?></span> to-do
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Due Soon -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
@@ -39,8 +75,11 @@
                         </div>
                     </div>
                     <div class="ml-4">
-                        <div class="text-sm font-medium text-gray-500">Due Soon</div>
-                        <div class="text-2xl font-bold text-gray-900"><?php echo e($upcomingTasks->count()); ?></div>
+                        <div class="text-sm font-medium text-gray-500">Due This Week</div>
+                        <div class="text-2xl font-bold text-gray-900" data-stat="due_this_week"><?php echo e($taskStats['due_this_week']); ?></div>
+                        <div class="text-xs text-gray-500 mt-1">
+                            <span data-stat="due_today"><?php echo e($taskStats['due_today']); ?></span> due today
+                        </div>
                     </div>
                 </div>
             </div>
@@ -57,7 +96,81 @@
                     </div>
                     <div class="ml-4">
                         <div class="text-sm font-medium text-gray-500">Overdue</div>
-                        <div class="text-2xl font-bold text-gray-900"><?php echo e($overdueTasks->count()); ?></div>
+                        <div class="text-2xl font-bold text-gray-900" data-stat="overdue"><?php echo e($taskStats['overdue']); ?></div>
+                        <div class="text-xs text-red-500 mt-1">Need attention!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Productivity & Priority Stats -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Productivity Card -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Productivity</h3>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">This Week</span>
+                        <span class="font-semibold text-green-600" data-stat="completed_this_week"><?php echo e($taskStats['completed_this_week']); ?> completed</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">This Month</span>
+                        <span class="font-semibold text-blue-600" data-stat="completed_this_month"><?php echo e($taskStats['completed_this_month']); ?> completed</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Subtasks Progress</span>
+                        <span class="font-semibold text-purple-600">
+                            <span data-stat="completed_subtasks"><?php echo e($taskStats['completed_subtasks']); ?></span>/<span data-stat="total_subtasks"><?php echo e($taskStats['total_subtasks']); ?></span> 
+                            (<span data-stat="subtask_completion_rate"><?php echo e($taskStats['subtask_completion_rate']); ?>%</span>)
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Priority Breakdown -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Priority Breakdown</h3>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+                            <span class="text-sm text-gray-600">High Priority</span>
+                        </div>
+                        <span class="font-semibold text-red-600" data-stat="high_priority"><?php echo e($taskStats['high_priority']); ?></span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <span class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
+                            <span class="text-sm text-gray-600">Medium Priority</span>
+                        </div>
+                        <span class="font-semibold text-yellow-600" data-stat="medium_priority"><?php echo e($taskStats['medium_priority']); ?></span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                            <span class="text-sm text-gray-600">Low Priority</span>
+                        </div>
+                        <span class="font-semibold text-green-600" data-stat="low_priority"><?php echo e($taskStats['low_priority']); ?></span>
+                    </div>
+                    
+                    <!-- Priority Progress Bar -->
+                    <div class="mt-4">
+                        <div class="flex text-xs text-gray-600 mb-1">
+                            <span>Priority Distribution</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <?php
+                                $totalActiveTasks = $taskStats['high_priority'] + $taskStats['medium_priority'] + $taskStats['low_priority'];
+                                $highPercent = $totalActiveTasks > 0 ? ($taskStats['high_priority'] / $totalActiveTasks) * 100 : 0;
+                                $mediumPercent = $totalActiveTasks > 0 ? ($taskStats['medium_priority'] / $totalActiveTasks) * 100 : 0;
+                                $lowPercent = $totalActiveTasks > 0 ? ($taskStats['low_priority'] / $totalActiveTasks) * 100 : 0;
+                            ?>
+                            <div class="h-2 rounded-full flex">
+                                <div class="bg-red-500 h-2 rounded-l-full" style="width: <?php echo e($highPercent); ?>%"></div>
+                                <div class="bg-yellow-500 h-2" style="width: <?php echo e($mediumPercent); ?>%"></div>
+                                <div class="bg-green-500 h-2 rounded-r-full" style="width: <?php echo e($lowPercent); ?>%"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -252,5 +365,202 @@
         </div>
     </div>
 </div>
+
+<?php $__env->startPush('scripts'); ?>
+<script>
+let updateInterval;
+let lastUpdateTime = new Date();
+
+function refreshStatistics() {
+    console.log('Refreshing statistics...');
+    
+    fetch('<?php echo e(route("tasks.statistics")); ?>', {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/json',
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Statistics updated:', data);
+        updateStatisticsDisplay(data);
+        updateLastUpdateTime();
+    })
+    .catch(error => {
+        console.error('Error refreshing statistics:', error);
+        showNotification('Failed to update statistics', 'error');
+    });
+}
+
+function updateStatisticsDisplay(stats) {
+    // Update all data-stat elements
+    Object.keys(stats).forEach(key => {
+        const elements = document.querySelectorAll(`[data-stat="${key}"]`);
+        elements.forEach(element => {
+            const oldValue = element.textContent;
+            const newValue = stats[key];
+            
+            if (oldValue !== newValue.toString()) {
+                // Add animation class for changes
+                element.classList.add('stat-updated');
+                element.textContent = newValue;
+                
+                // Remove animation class after animation completes
+                setTimeout(() => {
+                    element.classList.remove('stat-updated');
+                }, 500);
+            }
+        });
+    });
+    
+    // Update priority progress bar
+    updatePriorityProgressBar(stats);
+    
+    // Show success notification
+    showNotification('Statistics updated successfully!', 'success');
+}
+
+function updatePriorityProgressBar(stats) {
+    const totalActiveTasks = stats.high_priority + stats.medium_priority + stats.low_priority;
+    
+    if (totalActiveTasks > 0) {
+        const highPercent = (stats.high_priority / totalActiveTasks) * 100;
+        const mediumPercent = (stats.medium_priority / totalActiveTasks) * 100;
+        const lowPercent = (stats.low_priority / totalActiveTasks) * 100;
+        
+        const progressBar = document.querySelector('.h-2.rounded-full.flex');
+        if (progressBar) {
+            progressBar.innerHTML = `
+                <div class="bg-red-500 h-2 rounded-l-full transition-all duration-500" style="width: ${highPercent}%"></div>
+                <div class="bg-yellow-500 h-2 transition-all duration-500" style="width: ${mediumPercent}%"></div>
+                <div class="bg-green-500 h-2 rounded-r-full transition-all duration-500" style="width: ${lowPercent}%"></div>
+            `;
+        }
+    }
+}
+
+function updateLastUpdateTime() {
+    lastUpdateTime = new Date();
+    const timeElement = document.getElementById('last-updated');
+    if (timeElement) {
+        timeElement.textContent = 'Updated just now';
+    }
+}
+
+function updateRelativeTime() {
+    const timeElement = document.getElementById('last-updated');
+    if (timeElement) {
+        const now = new Date();
+        const diffMinutes = Math.floor((now - lastUpdateTime) / 60000);
+        
+        if (diffMinutes === 0) {
+            timeElement.textContent = 'Updated just now';
+        } else if (diffMinutes === 1) {
+            timeElement.textContent = 'Updated 1 minute ago';
+        } else if (diffMinutes < 60) {
+            timeElement.textContent = `Updated ${diffMinutes} minutes ago`;
+        } else {
+            const diffHours = Math.floor(diffMinutes / 60);
+            timeElement.textContent = `Updated ${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+        }
+    }
+}
+
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full ${
+        type === 'success' ? 'bg-green-500 text-white' : 
+        type === 'error' ? 'bg-red-500 text-white' : 
+        'bg-blue-500 text-white'
+    }`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+        notification.classList.remove('translate-x-full');
+    }, 100);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.classList.add('translate-x-full');
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+}
+
+function startAutoUpdate() {
+    // Update statistics every 30 seconds
+    updateInterval = setInterval(refreshStatistics, 30000);
+    
+    // Update relative time every 30 seconds
+    setInterval(updateRelativeTime, 30000);
+    
+    console.log('Auto-update started');
+}
+
+function stopAutoUpdate() {
+    if (updateInterval) {
+        clearInterval(updateInterval);
+        console.log('Auto-update stopped');
+    }
+}
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('My Tasks page loaded, starting auto-update...');
+    startAutoUpdate();
+    
+    // Listen for page visibility changes
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            stopAutoUpdate();
+        } else {
+            refreshStatistics();
+            startAutoUpdate();
+        }
+    });
+    
+    // Refresh when user comes back to the tab
+    window.addEventListener('focus', function() {
+        refreshStatistics();
+    });
+});
+
+// Clean up when page unloads
+window.addEventListener('beforeunload', function() {
+    stopAutoUpdate();
+});
+</script>
+
+<style>
+.stat-updated {
+    animation: statUpdate 0.5s ease-in-out;
+}
+
+@keyframes statUpdate {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); color: #3B82F6; }
+    100% { transform: scale(1); }
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+</style>
+<?php $__env->stopPush(); ?>
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH A:\myprojects\task-manager\resources\views/tasks/my-tasks.blade.php ENDPATH**/ ?>
