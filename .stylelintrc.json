@@ -1,0 +1,12 @@
+
+{
+  "extends": [
+    "stylelint-config-recommended",
+    "stylelint-config-tailwindcss"
+  ],
+  "customSyntax": "postcss-scss",
+  "rules": {
+    
+    "at-rule-no-unknown": null
+  }
+}
