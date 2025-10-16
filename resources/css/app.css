@@ -1,3 +1,115 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Kanban Board Styles */
+.kanban-column {
+    min-height: 400px;
+}
+
+.task-card {
+    cursor: move;
+    transition: all 0.2s ease;
+}
+
+.task-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.task-ghost {
+    opacity: 0.4;
+    background: #e5e7eb !important;
+    border: 2px dashed #9ca3af !important;
+}
+
+.task-chosen {
+    transform: rotate(5deg);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.task-drag {
+    opacity: 0.8;
+    transform: rotate(5deg);
+}
+
+/* Column Drop Zones */
+.kanban-column.drag-over {
+    background-color: #f3f4f6;
+    border: 2px dashed #6b7280;
+}
+
+/* Task Priority Indicators */
+.priority-high {
+    border-left: 4px solid #ef4444;
+}
+
+.priority-medium {
+    border-left: 4px solid #f59e0b;
+}
+
+.priority-low {
+    border-left: 4px solid #10b981;
+}
+
+/* Animation for status changes */
+.status-transition {
+    transition: all 0.3s ease-in-out;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    .kanban-columns {
+        display: block !important;
+    }
+    
+    .kanban-column-wrapper {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Loading states */
+.task-updating {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Task assignee avatar styles */
+.assignee-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: white;
+}
+
+/* Due date warning styles */
+.due-today {
+    color: #f59e0b;
+    font-weight: 600;
+}
+
+.due-overdue {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+/* Subtle animations */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.task-card {
+    animation: slideIn 0.3s ease-out;
+}
