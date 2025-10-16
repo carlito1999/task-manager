@@ -11,7 +11,7 @@
                     </h2>
                     <p class="text-gray-600 mt-1">Add a new task to {{ $project->name }}</p>
                 </div>
-                <a href="{{ route('projects.show', $project) }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                <a href="{{ route('projects.show', $project) }}" class="btn-secondary">
                     Back to Project
                 </a>
             </div>

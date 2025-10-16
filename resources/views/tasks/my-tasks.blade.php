@@ -16,7 +16,7 @@
                     </svg>
                     <span id="last-updated">Updated just now</span>
                 </div>
-                <button onclick="refreshStatistics()" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm font-medium transition-colors">
+                <button onclick="refreshStatistics()" class="btn-refresh">
                     Refresh
                 </button>
             </div>
@@ -223,18 +223,18 @@
                                     
                                     <div class="ml-4 flex flex-col items-end space-y-2">
                                         <!-- Status Badge -->
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                            @if($task->status === 'todo') bg-gray-100 text-gray-800
-                                            @elseif($task->status === 'in_progress') bg-blue-100 text-blue-800
-                                            @else bg-green-100 text-green-800 @endif">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium status-badge
+                                            @if($task->status === 'todo') status-todo
+                                            @elseif($task->status === 'in_progress') status-in-progress
+                                            @else status-done @endif">
                                             {{ ucfirst(str_replace('_', ' ', $task->status)) }}
                                         </span>
                                         
                                         <!-- Priority Badge -->
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                            @if($task->priority === 'low') bg-gray-100 text-gray-800
-                                            @elseif($task->priority === 'medium') bg-yellow-100 text-yellow-800
-                                            @else bg-red-100 text-red-800 @endif">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium priority-badge
+                                            @if($task->priority === 'low') priority-low
+                                            @elseif($task->priority === 'medium') priority-medium
+                                            @else priority-high @endif">
                                             {{ ucfirst($task->priority) }} Priority
                                         </span>
                                         

@@ -133,7 +133,7 @@
                 <div class="flex justify-between items-center pt-6 border-t border-gray-200">
                     <div class="flex space-x-3">
                         <button type="submit" 
-                                class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                class="btn-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                             Update Task
                         </button>
                         <a href="{{ route('projects.tasks.show', [$project, $task]) }}" 

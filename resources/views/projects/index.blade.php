@@ -8,7 +8,7 @@
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     {{ __('My Projects') }}
                 </h2>
-                <a href="{{ route('projects.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <a href="{{ route('projects.create') }}" class="btn-primary">
                     Create New Project
                 </a>
             </div>
@@ -30,10 +30,10 @@
                                                 {{ $project->name }}
                                             </a>
                                         </h3>
-                                        <span class="px-2 py-1 text-xs rounded-full 
-                                            @if($project->status === 'active') bg-green-100 text-green-800
-                                            @elseif($project->status === 'completed') bg-blue-100 text-blue-800  
-                                            @else bg-gray-100 text-gray-800
+                                        <span class="project-status-badge 
+                                            @if($project->status === 'active') project-active
+                                            @elseif($project->status === 'completed') project-completed  
+                                            @else project-archived
                                             @endif">
                                             {{ ucfirst($project->status) }}
                                         </span>

@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;     
 
 class User extends Authenticatable
 {
@@ -19,7 +20,8 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    protected $fillable = [
+    use HasUuids;
+    protected $fillable = [ 
         'name',
         'email',
         'password',

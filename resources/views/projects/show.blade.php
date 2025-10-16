@@ -18,16 +18,16 @@
                     @if($project->userCanManage(auth()->user()))
                     @csrf
                         <a href="{{ route('projects.tasks.create', $project) }}" 
-                           class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition-colors">
+                           class="btn-success">
                             Add Task
                         </a>
                     <a href="{{ route('projects.edit', $project) }}" 
-                       class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors">
+                       class="btn-primary">
                         Edit Project
                     </a>
                     @endif
                     <a href="{{ route('projects.index') }}" 
-                       class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition-colors">
+                       class="btn-secondary">
                         Back to Projects
                     </a>
                 </div>
@@ -66,10 +66,10 @@
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-4">
                         <div class="text-sm font-medium text-gray-500">Status</div>
-                        <span class="px-2 py-1 text-sm rounded-full 
-                            @if($project->status === 'active') bg-green-100 text-green-800
-                            @elseif($project->status === 'completed') bg-blue-100 text-blue-800  
-                            @else bg-gray-100 text-gray-800
+                        <span class="project-status-badge 
+                            @if($project->status === 'active') project-active
+                            @elseif($project->status === 'completed') project-completed
+                            @else project-archived
                             @endif">
                             {{ ucfirst($project->status) }}
                         </span>
@@ -87,7 +87,7 @@
                                 <div class="flex items-center">
                                     <div class="w-3 h-3 bg-gray-400 rounded-full mr-2"></div>
                                     Todo 
-                                    <span class="task-count ml-2 bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
+                                    <span class="task-count badge-count badge-todo">
                                         {{ $tasksByStatus['todo']->count() }}
                                     </span>
                                 </div>
@@ -136,7 +136,7 @@
                                     
                                     <div class="flex space-x-1">
                                         <a href="{{ route('projects.tasks.show', [$project, $task]) }}" 
-                                           class="text-blue-500 hover:text-blue-700 text-xs">View</a>
+                                           class="link-primary text-xs">View</a>
                                         @if($project->userCanManage(auth()->user()) || $task->assigned_to === auth()->id())
                                             <button onclick="updateTaskStatus({{ $task->id }}, {{ $project->id }}, 'in_progress')"
                                                     class="text-green-500 hover:text-green-700 text-xs ml-2">
@@ -157,7 +157,7 @@
                             <h3 class="font-semibold text-gray-800 flex items-center">
                                 <div class="w-3 h-3 bg-blue-400 rounded-full mr-2"></div>
                                 In Progress 
-                                <span class="task-count ml-2 bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">
+                                <span class="task-count badge-count badge-progress">
                                     {{ $tasksByStatus['in_progress']->count() }}
                                 </span>
                             </h3>
@@ -218,7 +218,7 @@
                             <h3 class="font-semibold text-gray-800 flex items-center">
                                 <div class="w-3 h-3 bg-green-400 rounded-full mr-2"></div>
                                 Done 
-                                <span class="task-count ml-2 bg-green-100 text-green-600 text-xs px-2 py-1 rounded-full">
+                                <span class="task-count badge-count badge-done">
                                     {{ $tasksByStatus['done']->count() }}
                                 </span>
                             </h3>

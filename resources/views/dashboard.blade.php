@@ -8,7 +8,7 @@
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     {{ __('Dashboard') }}
                 </h2>
-                <a href="{{ route('projects.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <a href="{{ route('projects.create') }}" class="btn-primary">
                     Create Project
                 </a>
             </div>
@@ -102,7 +102,7 @@
                     <div class="p-6">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-lg font-medium text-gray-900">Recent Projects</h3>
-                            <a href="{{ route('projects.index') }}" class="text-blue-500 hover:text-blue-700">View All</a>
+                            <a href="{{ route('projects.index') }}" class="link-primary">View All</a>
                         </div>
                         
                         @if($userProjects->count() > 0)
@@ -114,10 +114,10 @@
                                             <p class="text-sm text-gray-500">{{ $project->tasks->count() }} tasks • {{ $project->completion_percentage }}% complete</p>
                                         </div>
                                         <div class="flex space-x-2">
-                                            <span class="px-2 py-1 text-xs rounded-full 
-                                                @if($project->status === 'active') bg-green-100 text-green-800
-                                                @elseif($project->status === 'completed') bg-blue-100 text-blue-800  
-                                                @else bg-gray-100 text-gray-800
+                                            <span class="project-status-badge 
+                                                @if($project->status === 'active') project-active
+                                                @elseif($project->status === 'completed') project-completed  
+                                                @else project-archived
                                                 @endif">
                                                 {{ ucfirst($project->status) }}
                                             </span>

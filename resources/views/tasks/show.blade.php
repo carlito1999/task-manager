@@ -12,16 +12,16 @@
                         ← Back to {{ $project->name }}
                     </a>
                     <span class="text-gray-400">|</span>
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                        @if($task->status === 'todo') bg-gray-100 text-gray-800
-                        @elseif($task->status === 'in_progress') bg-blue-100 text-blue-800
-                        @else bg-green-100 text-green-800 @endif">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium status-badge
+                        @if($task->status === 'todo') status-todo
+                        @elseif($task->status === 'in_progress') status-in-progress
+                        @else status-done @endif">
                         {{ ucfirst(str_replace('_', ' ', $task->status)) }}
                     </span>
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                        @if($task->priority === 'low') bg-gray-100 text-gray-800
-                        @elseif($task->priority === 'medium') bg-yellow-100 text-yellow-800
-                        @else bg-red-100 text-red-800 @endif">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium priority-badge
+                        @if($task->priority === 'low') priority-low
+                        @elseif($task->priority === 'medium') priority-medium
+                        @else priority-high @endif">
                         {{ ucfirst($task->priority) }} Priority
                     </span>
                 </div>
@@ -30,7 +30,7 @@
             @if($project->userCanManage(auth()->user()) || $task->assigned_to === auth()->id())
                 <div class="flex space-x-2">
                     <a href="{{ route('projects.tasks.edit', [$project, $task]) }}" 
-                       class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                       class="btn-sm">
                         Edit Task
                     </a>
                 </div>
@@ -80,7 +80,7 @@
                                               required></textarea>
                                     <div class="mt-2">
                                         <button type="submit" 
-                                                class="bg-blue-600 text-white px-4 py-2 text-sm rounded-md hover:bg-blue-700 transition-colors">
+                                                class="btn-sm">
                                             Post Comment
                                         </button>
                                     </div>
@@ -245,8 +245,8 @@
                                     @csrf
                                     @method('PATCH')
                                     <input type="hidden" name="status" value="done">
-                                    <button type="submit" class="w-full bg-green-600 text-white px-4 py-2 text-sm rounded-md hover:bg-green-700 transition-colors">
-                                        Mark Complete
+                                    <button type="submit" class="w-full btn-sm-success">
+                                        Mark as Complete
                                     </button>
                                 </form>
                             @endif
