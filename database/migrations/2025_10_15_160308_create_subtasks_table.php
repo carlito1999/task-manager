@@ -18,7 +18,7 @@ return new class extends Migration
             $table->enum('status', ['todo', 'in_progress', 'done'])->default('todo');
             $table->enum('priority', ['low', 'medium', 'high'])->default('medium');
             $table->foreignId('task_id')->constrained()->onDelete('cascade');
-            $table->foreignId('assigned_to')->nullable()->constrained('users')->onDelete('set null');
+            $table->uuid('assigned_to')->nullable();
             $table->date('due_date')->nullable();
             $table->integer('sort_order')->default(0);
             $table->timestamps();

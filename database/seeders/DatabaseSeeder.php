@@ -8,6 +8,7 @@ use App\Models\Task;
 use App\Models\Comment;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
@@ -20,24 +21,32 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Create test users
-        $testUser = User::factory()->create([
+        $testUser = User::create([
             'name' => 'Test User',
             'email' => 'test@example.com',
+            'password' => Hash::make('password'),
+            'email_verified_at' => now(),
         ]);
 
-        $johnDoe = User::factory()->create([
+        $johnDoe = User::create([
             'name' => 'John Doe',
             'email' => 'john@example.com',
+            'password' => Hash::make('password'),
+            'email_verified_at' => now(),
         ]);
 
-        $janeSmith = User::factory()->create([
+        $janeSmith = User::create([
             'name' => 'Jane Smith',
             'email' => 'jane@example.com',
+            'password' => Hash::make('password'),
+            'email_verified_at' => now(),
         ]);
 
-        $mikeWilson = User::factory()->create([
+        $mikeWilson = User::create([
             'name' => 'Mike Wilson',
             'email' => 'mike@example.com',
+            'password' => Hash::make('password'),
+            'email_verified_at' => now(),
         ]);
 
         // Create sample projects
