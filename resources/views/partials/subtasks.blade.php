@@ -9,7 +9,7 @@
         </h3>
         <button type="button" 
                 onclick="toggleSubtaskForm()" 
-                class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-sm">
+                class="btn-success text-sm">
             Add Subtask
         </button>
     </div>
@@ -94,7 +94,7 @@
 
             <div class="mt-4 flex space-x-2">
                 <button type="submit" 
-                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
+                        class="btn-primary text-sm">
                     Create Subtask
                 </button>
                 <button type="button" 

@@ -89,7 +89,7 @@
                         <div class="flex items-center justify-between">
                             <div class="flex space-x-3">
                                 <button type="submit" 
-                                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                        class="btn-primary focus:outline-none focus:shadow-outline">
                                     Update Project
                                 </button>
                                 
@@ -103,7 +103,7 @@
                             @if($project->userCanManage(auth()->user()))
                                 <button type="button" 
                                         onclick="if(confirm('Are you sure you want to delete this project? This action cannot be undone and will delete all associated tasks.')) { document.getElementById('delete-form').submit(); }"
-                                        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                        class="btn-danger focus:outline-none focus:shadow-outline">
                                     Delete Project
                                 </button>
                             @endif

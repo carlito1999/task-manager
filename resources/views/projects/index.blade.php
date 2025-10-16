@@ -117,12 +117,12 @@
                                 <!-- Action Buttons -->
                                 <div class="mt-4 flex space-x-2">
                                     <a href="{{ route('projects.show', $project) }}" 
-                                       class="flex-1 text-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
+                                       class="flex-1 text-center btn-primary text-sm">
                                         View Project
                                     </a>
                                     @if($project->userCanManage(auth()->user()))
                                         <a href="{{ route('projects.tasks.create', $project) }}" 
-                                           class="flex-1 text-center bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-sm">
+                                           class="flex-1 text-center btn-success text-sm">
                                             Add Task
                                         </a>
                                     @endif
