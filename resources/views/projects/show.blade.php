@@ -44,7 +44,7 @@
                         <div class="text-sm font-medium text-gray-500">Progress</div>
                         <div class="text-2xl font-bold text-gray-900">{{ $project->completion_percentage }}%</div>
                         <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
-                            <div class="bg-blue-600 h-2 rounded-full" style="width: {{ $project->completion_percentage }}%"></div>
+                            <div class="bg-blue-600 h-2 rounded-full" style="width: {{ $project->completion_percentage ?? 0 }}%"></div>
                         </div>
                     </div>
                 </div>
