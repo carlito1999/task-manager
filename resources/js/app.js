@@ -36,14 +36,22 @@ function updateTaskStatusDragDrop(evt) {
     const taskId = taskCard.dataset.taskId;
     const projectId = taskCard.dataset.projectId;
     const newStatus = newColumn.dataset.status;
-    
+    if (!taskId || !projectId) {
+        console.error('Missing taskId or projectId on task card', { taskId, projectId });
+        taskCard.classList.remove('task-updating');
+        return;
+    }
+    console.log(`Updating task ${taskId} to status ${newStatus}`);
     // Add loading state
     taskCard.classList.add('task-updating');
     
     // Update task status via AJAX
     fetch(`/projects/${projectId}/tasks/${taskId}/status`, {
         method: 'PATCH',
+        credentials: 'same-origin',
         headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
@@ -51,7 +59,21 @@ function updateTaskStatusDragDrop(evt) {
             status: newStatus
         })
     })
-    .then(response => response.json())
+    .then(response => {
+        const contentType = response.headers.get('content-type') || '';
+        if (!response.ok) {
+            if (response.status === 401 || response.status === 302 || response.status === 301) {
+                // Authentication/redirect detected
+                throw new Error('auth-redirect');
+            }
+            throw new Error(`HTTP ${response.status}`);
+        }
+        if (!contentType.includes('application/json')) {
+            // Likely a redirect to login page (HTML)
+            throw new Error('non-json');
+        }
+        return response.json();
+    })
     .then(data => {
         taskCard.classList.remove('task-updating');
         if (data.success) {
@@ -71,8 +93,12 @@ function updateTaskStatusDragDrop(evt) {
         console.error('Error:', error);
         taskCard.classList.remove('task-updating');
         // Revert the move if it failed
-        evt.from.appendChild(taskCard);
-        showNotification('Failed to update task status', 'error');
+        try { evt.from.appendChild(taskCard); } catch (e) { /* ignore */ }
+        if (error.message === 'auth-redirect' || error.message === 'non-json') {
+            showNotification('You appear to be logged out. Please refresh the page and sign in again.', 'error');
+        } else {
+            showNotification('Failed to update task status', 'error');
+        }
     });
 }
 
@@ -86,7 +112,10 @@ window.updateTaskStatus = function(taskId, projectId, newStatus) {
     
     fetch(`/projects/${projectId}/tasks/${taskId}/status`, {
         method: 'PATCH',
+        credentials: 'same-origin',
         headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
@@ -94,7 +123,19 @@ window.updateTaskStatus = function(taskId, projectId, newStatus) {
             status: newStatus
         })
     })
-    .then(response => response.json())
+    .then(response => {
+        const contentType = response.headers.get('content-type') || '';
+        if (!response.ok) {
+            if (response.status === 401 || response.status === 302 || response.status === 301) {
+                throw new Error('auth-redirect');
+            }
+            throw new Error(`HTTP ${response.status}`);
+        }
+        if (!contentType.includes('application/json')) {
+            throw new Error('non-json');
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             // Move the task card to the correct column
@@ -105,8 +146,8 @@ window.updateTaskStatus = function(taskId, projectId, newStatus) {
                 updateColumnCounts();
                 showNotification('Task status updated successfully!', 'success');
             } else {
-                // Reload page if DOM manipulation fails
-                window.location.reload();
+                // If DOM manipulation fails, show error but don't reload
+                showNotification('Task moved, but UI update failed.', 'error');
             }
         } else {
             showNotification('Failed to update task status', 'error');
@@ -121,7 +162,11 @@ window.updateTaskStatus = function(taskId, projectId, newStatus) {
         if (taskCard) {
             taskCard.classList.remove('task-updating');
         }
-        showNotification('Failed to update task status', 'error');
+        if (error.message === 'auth-redirect' || error.message === 'non-json') {
+            showNotification('You appear to be logged out. Please refresh the page and sign in again.', 'error');
+        } else {
+            showNotification('Failed to update task status', 'error');
+        }
     });
 };
 

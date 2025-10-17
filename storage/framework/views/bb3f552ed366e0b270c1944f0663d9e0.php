@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('content'); ?>
     <!-- Header -->
     <div class="bg-white shadow mb-6">
@@ -9,7 +7,7 @@
                     <?php echo e(__('My Projects')); ?>
 
                 </h2>
-                <a href="<?php echo e(route('projects.create')); ?>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <a href="<?php echo e(route('projects.create')); ?>" class="btn-primary">
                     Create New Project
                 </a>
             </div>
@@ -32,10 +30,10 @@
 
                                             </a>
                                         </h3>
-                                        <span class="px-2 py-1 text-xs rounded-full 
-                                            <?php if($project->status === 'active'): ?> bg-green-100 text-green-800
-                                            <?php elseif($project->status === 'completed'): ?> bg-blue-100 text-blue-800  
-                                            <?php else: ?> bg-gray-100 text-gray-800
+                                        <span class="project-status-badge 
+                                            <?php if($project->status === 'active'): ?> project-active
+                                            <?php elseif($project->status === 'completed'): ?> project-completed  
+                                            <?php else: ?> project-archived
                                             <?php endif; ?>">
                                             <?php echo e(ucfirst($project->status)); ?>
 
@@ -121,12 +119,12 @@
                                 <!-- Action Buttons -->
                                 <div class="mt-4 flex space-x-2">
                                     <a href="<?php echo e(route('projects.show', $project)); ?>" 
-                                       class="flex-1 text-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
+                                       class="flex-1 text-center btn-primary text-sm">
                                         View Project
                                     </a>
                                     <?php if($project->userCanManage(auth()->user())): ?>
                                         <a href="<?php echo e(route('projects.tasks.create', $project)); ?>" 
-                                           class="flex-1 text-center bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-sm">
+                                           class="flex-1 text-center btn-success text-sm">
                                             Add Task
                                         </a>
                                     <?php endif; ?>

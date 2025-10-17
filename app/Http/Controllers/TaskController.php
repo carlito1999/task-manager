@@ -12,6 +12,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\Response;
 
 class TaskController extends Controller
 {
@@ -191,7 +192,7 @@ class TaskController extends Controller
     /**
      * Update task status (for AJAX/Kanban).
      */
-    public function updateStatus(Request $request, Project $project, Task $task): RedirectResponse
+    public function updateStatus(Request $request, Project $project, Task $task): RedirectResponse|Response|\Illuminate\Http\JsonResponse
     {
         // Check if user can manage this project or is assigned to the task
         if (!$project->userCanManage(Auth::user()) && $task->assigned_to !== Auth::id()) {
@@ -215,6 +216,10 @@ class TaskController extends Controller
             $assignedUser = User::find($task->assigned_to);
             Mail::to($assignedUser)->send(new TaskStatusChanged($task, $oldStatus, $validated['status'], Auth::user()));
         }
+        
+        if ($request->ajax()) {
+        return response()->json(['success' => true, 'new_status' => $task->status]);
+    }
 
         return back()->with('success', 'Task status updated successfully!');
     }
